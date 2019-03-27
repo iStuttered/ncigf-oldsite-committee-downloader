@@ -1,8 +1,5 @@
-import credentials, debugging
-import re, requests, time, os, shutil, urllib
-from time import gmtime, strftime
+import credentials, debugging, re, requests, time, os, shutil, urllib, textract
 from bs4 import BeautifulSoup
-import textract
 
 session = credentials.generateSession()
 
@@ -201,7 +198,7 @@ def downloadFile(nodeHREF:str):
     if base_html_url not in file_href:
         file_href = base_html_url + file_href
 
-    downloadRequest = session.get(file_href, allow_redirects=True)
+    file_request = session.get(file_href, allow_redirects=True)
 
     committee_directory = credentials.getCommitteesDirectory()
 
@@ -214,7 +211,7 @@ def downloadFile(nodeHREF:str):
         return
 
     try:
-        open(localPath, mode="wb").write(downloadRequest.content)
+        open(localPath, mode="wb").write(file_request.content)
         return localPath
     except OSError:
         print("Failed to download.")
