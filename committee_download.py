@@ -99,14 +99,16 @@ def downloadTaxonomy(taxonomyLinks:list):
     Args:
         taxonomyLinks (list): A list of node files retrieved from a taxonomy page.
     """
-    index = 1
-    total = len(taxonomyLinks)
+    files_organized = 0
+    total_files = len(taxonomyLinks)
     for link in taxonomyLinks:
-        file_path = organizeFile(link)
+        organized_file = organizeFile(link)
 
-        if len(file_path) > 0:
-            print(str(index) + "/" + str(total))
-            index += 1
+        if len(organized_file) > 0:
+            files_organized += 1
+            print(str(files_organized) + "/" + str(total_files))
+        else:
+            print("File was not organized.")
 
 def buildCommittees():
     """
@@ -141,22 +143,14 @@ def buildCommittees():
     for committee_name in committee_names:
         os.mkdir(committee_directory + "//" + committee_name)
 
-def determineCommittee(file:str):
+def determineCommittee(lines_in_file:str):
     """
     Use Textract to convert a given PDF file to text and get the committee that
     file likely belongs. 
     
     Args:
         file (str): A PDF file to process.
-    """
-
-    text = None
-
-    try:
-        text = textract.process(file).splitlines()
-    except:
-        return
-    
+    """    
     committees = [
         "Accounting Issues Committee",
         "Best Practices Committee",
@@ -180,7 +174,7 @@ def determineCommittee(file:str):
         "Special Funding Committee"
     ]
 
-    for line in text:
+    for line in lines_in_file:
         for committee in committees:
             if committee.lower() in str(line.strip().lower(), "utf-8"):
                 return committee + "/"
@@ -255,17 +249,17 @@ def organizeFile(file_path:str):
         print("Not a valid file format.")
         return ""
 
-    committee_name = determineCommittee(local_file_path)
+    lines_in_local_file = textract.process(local_file_path).splitlines()
+
+    committee_name = determineCommittee(lines_in_local_file)
 
     if committee_name == None:
         return ""
 
     new_file_path = committee_directory + committee_name + local_file_name_no_extension + ".txt"
     if committee_name != None:
-        with open(new_file_path, "wb") as f:
-
-            lines_in_file = textract.process(local_file_path).splitlines()
-            f.writelines(lines_in_file)
+        with open(new_file_path, "wb") as new_file:
+            new_file.writelines(lines_in_local_file)
             os.remove(local_file_path)
 
         return new_file_path
