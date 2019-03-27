@@ -102,18 +102,18 @@ def downloadTaxonomy(taxonomyLinks:list):
     index = 1
     total = len(taxonomyLinks)
     for link in taxonomyLinks:
-        organizeFile(link)
-        print(str(index) + "/" + str(total))
-        index += 1
+        file_path = organizeFile(link)
+
+        if len(file_path) > 0:
+            print(str(index) + "/" + str(total))
+            index += 1
 
 def buildCommittees():
     """
     Create a folder for every committee and place the folder inside
-    parentDirectory.
-    
-        parentDirectory (str, optional): Defaults to "/home/njennings/minutes_pdfs/". A directory to place committee folders into.
+    committee_directory defined in the credentials file.
     """
-    committees = [
+    committee_names = [
         "Accounting Issues Committee",
         "Best Practices Committee",
         "Audit Committee",
@@ -138,8 +138,8 @@ def buildCommittees():
 
     committee_directory = credentials.getCommitteesDirectory()
     
-    for committee in committees:
-        os.mkdir(committee_directory + "//" + committee)
+    for committee_name in committee_names:
+        os.mkdir(committee_directory + "//" + committee_name)
 
 def determineCommittee(file:str):
     """
@@ -226,19 +226,17 @@ def downloadFile(nodeHREF:str):
         print("Failed to download.")
         return
 
-def organizeFile(file_path:str) -> str:
+def organizeFile(file_path:str):
     """
     Attempt to retrieve the committee to which the file belonged and place it
     under the associated committee folder.
     
     Args:
         file (str): A file path to organize.
-        downloadFolder (str, optional): Defaults to
-    "/home/njennings/minutes_pdfs/". A folder to put the downloaded file
-    preemptively before organizing.
     
     Returns:
-        str: [description]
+        str: An absolute file path
+        bool: False if no file was found
     """
 
     local_file_path = downloadFile(file_path)
@@ -247,7 +245,7 @@ def organizeFile(file_path:str) -> str:
     committee_directory = credentials.getCommitteesDirectory()
 
     if local_file_path == None:
-        return
+        return ""
 
     local_file_path_extension = local_file_name.split(".")[1]
 
@@ -255,12 +253,12 @@ def organizeFile(file_path:str) -> str:
 
     if any(extension.lower() in local_file_path_extension for extension in invalid_extensions):
         print("Not a valid file format.")
-        return
+        return ""
 
     committee_name = determineCommittee(local_file_path)
 
     if committee_name == None:
-        return
+        return ""
 
     new_file_path = committee_directory + committee_name + local_file_name_no_extension + ".txt"
     if committee_name != None:
@@ -273,7 +271,7 @@ def organizeFile(file_path:str) -> str:
         return new_file_path
     else:
         print("Could not determine committee.")
-        return
+        return ""
 
 if __name__ == "__main__":
     """
