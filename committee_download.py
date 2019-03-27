@@ -47,20 +47,28 @@ def getLinksFromTaxonomy(href:str) -> list:
     
     lastPage = int(lastPage)
 
-    all_links = []
+    documents = []
+
+    base_html_url = credentials.getBaseURL()
 
     for pageIndex in range(lastPage + 1):
+
         print("Parsing page " + str(pageIndex) + " out of " + str(lastPage) + " " + href)
 
-        paginated = session.get(href + "?page=" + str(pageIndex))
-        html = BeautifulSoup(paginated.content, "html.parser")
-        view_content = html.find("div", {"class": "view-content"})
-        links = view_content.find_all("a")
-        links = [''.join([credentials.getLoginURL(), node["href"]]) for node in links]
+        paginated_page = session.get(href + "?page=" + str(pageIndex))
+        paginated_html = BeautifulSoup(paginated_page.content, "html.parser")
 
-        all_links.extend(links)
+        view_content_element = paginated_html.find("div", {"class": "view-content"})
 
-    return all_links
+        document_links = view_content_element.find_all("a")
+
+        document_links = [
+            ''.join( [base_html_url, element["href"]] ) for element in document_links
+        ]
+
+        documents.extend(document_links)
+
+    return documents
 
 def getMinutes() -> list:
     """
