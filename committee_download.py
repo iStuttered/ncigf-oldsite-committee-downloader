@@ -22,17 +22,21 @@ def getLinksFromTaxonomy(page_href:str) -> list:
 
     html = BeautifulSoup(page.content, "html.parser")
 
-    lastPage = html.find("a", {"title": "Go to last page"})["href"].split("=")[1]
+    last_page_element = html.find("a", {"title": "Go to last page"})
+
+    last_page_href = last_page_element["href"]
+
+    last_page = last_page_href.split("=")[1]
     
-    lastPage = int(lastPage)
+    last_page = int(last_page)
 
     documents = []
 
     base_html_url = credentials.getBaseURL()
 
-    for pageIndex in range(lastPage + 1):
+    for pageIndex in range(last_page + 1):
 
-        print("Parsing page " + str(pageIndex) + " out of " + str(lastPage) + " " + page_href)
+        print("Parsing page " + str(pageIndex) + " out of " + str(last_page) + " " + page_href)
 
         paginated_page = session.get(page_href + "?page=" + str(pageIndex))
         paginated_html = BeautifulSoup(paginated_page.content, "html.parser")
