@@ -19,19 +19,13 @@ files within each committee within in each folder.
 Also make sure to change the username and password immediately below.
 
 """
-import credentials
+import credentials, debugging
 import re, requests, time, os, shutil, urllib
 from time import gmtime, strftime
 from bs4 import BeautifulSoup
 import textract
 
 session = credentials.generateSession()
-
-def pause():
-    """
-    Breakpoint for code tests.
-    """
-    input(" -=-=- Pause -=-=-")
 
 def getLinksFromTaxonomy(href:str) -> list:
     """
@@ -68,9 +62,6 @@ def getLinksFromTaxonomy(href:str) -> list:
 
     return all_links
 
-
-
-
 def getMinutes() -> list:
     """
     Get all the node files from the minutes taxonomy page.
@@ -80,13 +71,6 @@ def getMinutes() -> list:
     """
     minutes = "https://member.ncigf.org/taxonomy/term/334"
     return getLinksFromTaxonomy(minutes)
-
-def clear():
-    """
-    A console.clearScreen() for easier console viewing.
-    """
-    os.system("clear")
-
 
 def getAgendas() -> list:
     """
