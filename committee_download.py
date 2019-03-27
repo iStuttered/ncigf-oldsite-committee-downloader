@@ -265,7 +265,7 @@ def organizeFile(file_path:str) -> str:
     new_file_path = committee_directory + committee_name + local_file_name_no_extension + ".txt"
     if committee_name != None:
         with open(new_file_path, "wb") as f:
-            
+
             lines_in_file = textract.process(local_file_path).splitlines()
             f.writelines(lines_in_file)
             os.remove(local_file_path)
@@ -275,7 +275,7 @@ def organizeFile(file_path:str) -> str:
         print("Could not determine committee.")
         return
 
-def main():
+if __name__ == "__main__":
     """
     The main method which does the following:
     1. Clean the output folder
@@ -291,8 +291,6 @@ def main():
     downloadTaxonomy(agendas)
     downloadTaxonomy(minutes)
     print(" - - - End - - - ")
-
-main()
 
 
 
