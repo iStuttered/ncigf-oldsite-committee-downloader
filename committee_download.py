@@ -73,14 +73,16 @@ def getAgendas() -> list:
     agendas = "https://member.ncigf.org/taxonomy/term/332"
     return getLinksFromTaxonomy(agendas)
 
-def cleanCommitteesFolder(downloadFolder:str = "/home/njennings/minutes_pdfs/"):
+def cleanCommitteesFolder():
     """
     Delete everything in the downloadFolder so the script has a fresh start.
 
-        downloadFolder (str, optional): Defaults to "/home/njennings/minutes_pdfs/". The folder that should be cleaned.
     """
-    for file in os.listdir(downloadFolder):
-        dir_path = os.path.join(downloadFolder, file)
+
+    committees_directory = credentials.getCommitteesDirectory()
+
+    for file_name in os.listdir(committees_directory):
+        dir_path = os.path.join(committees_directory, file_name)
         try:
             if os.path.isfile(dir_path):
                 os.unlink(dir_path)
