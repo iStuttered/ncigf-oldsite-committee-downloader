@@ -6,7 +6,6 @@ username = "[YOUR USERNAME]"
 password = "[YOUR PASSWORD]"
 committees_directory = "[COMMITTEES ROOT DIRECTORY]"
 
-
 def generateSession() -> requests.Session:
     session = requests.Session()
     session.auth = (username, password)

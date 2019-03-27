@@ -1,24 +1,3 @@
-"""
-Member Dev Committees Downloader
-V 0.85
-NJ
-
-Downloads all of the committee agendas and minutes from the old member's site
-and organizes them into folders on the local file system. 
-
-Dependencies:
-textract, which does require some fiddling to download all of the required
-packages as well as Ubuntu or OSx for the operating system. 
-A default output directory like:
-
-parentDirectory:str = "/home/njennings/minutes_pdfs/"
-
-minutes_pdfs is the folder that will house committee folders and then all the
-files within each committee within in each folder.
-
-Also make sure to change the username and password immediately below.
-
-"""
 import credentials, debugging
 import re, requests, time, os, shutil, urllib
 from time import gmtime, strftime
@@ -27,7 +6,7 @@ import textract
 
 session = credentials.generateSession()
 
-def getLinksFromTaxonomy(href:str) -> list:
+def getLinksFromTaxonomy(page_href:str) -> list:
     """
     Get all the file links from every page of a paticular taxonomy URL.
 
@@ -39,7 +18,7 @@ def getLinksFromTaxonomy(href:str) -> list:
     Returns:
         list: A list of file node links.
     """
-    page = session.get(href)
+    page = session.get(page_href)
 
     html = BeautifulSoup(page.content, "html.parser")
 
@@ -53,9 +32,9 @@ def getLinksFromTaxonomy(href:str) -> list:
 
     for pageIndex in range(lastPage + 1):
 
-        print("Parsing page " + str(pageIndex) + " out of " + str(lastPage) + " " + href)
+        print("Parsing page " + str(pageIndex) + " out of " + str(lastPage) + " " + page_href)
 
-        paginated_page = session.get(href + "?page=" + str(pageIndex))
+        paginated_page = session.get(page_href + "?page=" + str(pageIndex))
         paginated_html = BeautifulSoup(paginated_page.content, "html.parser")
 
         view_content_element = paginated_html.find("div", {"class": "view-content"})
