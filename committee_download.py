@@ -62,7 +62,7 @@ def getLinksFromTaxonomy(href:str) -> list:
         html = BeautifulSoup(paginated.content, "html.parser")
         view_content = html.find("div", {"class": "view-content"})
         links = view_content.find_all("a")
-        links = [''.join([loginurl, node["href"]]) for node in links]
+        links = [''.join([credentials.getLoginURL(), node["href"]]) for node in links]
 
         all_links.extend(links)
 
@@ -306,8 +306,8 @@ def downloadFile(nodeHREF:str, downloadFolder:str = "/home/njennings/minutes_pdf
     message_status = html.find("div", {"class": "messages status"})
     href = message_status.find("a")["href"]
 
-    if loginurl not in href:
-        href = loginurl + href
+    if credentials.getLoginURL() not in href:
+        href = credentials.getLoginURL() + href
 
     downloadRequest = session.get(href, allow_redirects=True)
 
