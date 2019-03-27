@@ -121,7 +121,7 @@ def downloadTaxonomy(taxonomyLinks:list):
         print(str(index) + "/" + str(total))
         index += 1
 
-def buildCommittees(parentDirectory:str = "/home/njennings/minutes_pdfs/"):
+def buildCommittees():
     """
     Create a folder for every committee and place the folder inside
     parentDirectory.
@@ -150,9 +150,11 @@ def buildCommittees(parentDirectory:str = "/home/njennings/minutes_pdfs/"):
         "Site Selection Committee",
         "Special Funding Committee"
     ]
+
+    committee_directory = credentials.getCommitteesDirectory()
     
     for committee in committees:
-        os.mkdir(parentDirectory + "//" + committee)
+        os.mkdir(committee_directory + "//" + committee)
 
 def determineCommittee(file:str):
     """
@@ -200,7 +202,7 @@ def determineCommittee(file:str):
     
     return None
 
-def downloadFile(nodeHREF:str, downloadFolder:str = "/home/njennings/minutes_pdfs/"):
+def downloadFile(nodeHREF:str):
     """
     Given a node link, download the actual file that belongs to the link and
     place it in the downloadFolder.
@@ -215,14 +217,20 @@ def downloadFile(nodeHREF:str, downloadFolder:str = "/home/njennings/minutes_pdf
     message_status = html.find("div", {"class": "messages status"})
     href = message_status.find("a")["href"]
 
-    if credentials.getLoginURL() not in href:
-        href = credentials.getLoginURL() + href
+    base_html_url = credentials.getBaseURL()
+
+    if base_html_url not in href:
+        href = base_html_url + href
 
     downloadRequest = session.get(href, allow_redirects=True)
 
-    localPath = downloadFolder + href.split("/")[-1]
+    committee_directory = credentials.getCommitteesDirectory()
 
-    if "draft" in localPath.split("/")[-1].lower():
+    file_name = href.split("/")[-1]
+
+    localPath = committee_directory + file_name
+
+    if "draft" in file_name.lower():
         print("Ignore drafts.")
         return
 

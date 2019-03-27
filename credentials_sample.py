@@ -4,6 +4,8 @@ login_url = "[WEBSITE LOGIN URL]"
 base_url = "[WEBSITE BASE URL]"
 username = "[YOUR USERNAME]"
 password = "[YOUR PASSWORD]"
+committees_directory = "[COMMITTEES ROOT DIRECTORY]"
+
 
 def generateSession() -> requests.Session:
     session = requests.Session()
@@ -16,3 +18,6 @@ def getLoginURL() -> str:
 
 def getBaseURL() -> str:
     return base_url
+
+def getCommitteesDirectory() -> str:
+    return committees_directory
