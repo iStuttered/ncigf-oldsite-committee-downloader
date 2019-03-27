@@ -226,7 +226,7 @@ def downloadFile(nodeHREF:str):
         print("Failed to download.")
         return
 
-def organizeFile(file:str, downloadFolder:str = "/home/njennings/minutes_pdfs/") -> str:
+def organizeFile(file_path:str) -> str:
     """
     Attempt to retrieve the committee to which the file belonged and place it
     under the associated committee folder.
@@ -241,29 +241,36 @@ def organizeFile(file:str, downloadFolder:str = "/home/njennings/minutes_pdfs/")
         str: [description]
     """
 
-    localPath = downloadFile(file)
+    local_file_path = downloadFile(file_path)
+    local_file_name = local_file_path.split("/")[-1]
+    local_file_name_no_extension = local_file_name.split(".")[0]
+    committee_directory = credentials.getCommitteesDirectory()
 
-    if localPath == None:
+    if local_file_path == None:
         return
 
-    if "doc" in localPath.split('.')[1] or "msg" in localPath.split('.')[1]:
+    local_file_path_extension = local_file_name.split(".")[1]
+
+    invalid_extensions = ["msg", "doc"]
+
+    if any(extension.lower() in local_file_path_extension for extension in invalid_extensions):
         print("Not a valid file format.")
         return
 
-    committee = determineCommittee(localPath)
+    committee_name = determineCommittee(local_file_path)
 
-    if committee == None:
+    if committee_name == None:
         return
 
-    fileName = localPath.split("/")[-1]
-    fileName = downloadFolder + committee + localPath.split("/")[-1].split(".")[0] + ".txt"
-    if committee != None:
-        with open(fileName, "wb") as f:
-            text = textract.process(localPath).splitlines()
-            f.writelines(text)
-            os.remove(localPath)
+    new_file_path = committee_directory + committee_name + local_file_name_no_extension + ".txt"
+    if committee_name != None:
+        with open(new_file_path, "wb") as f:
+            
+            lines_in_file = textract.process(local_file_path).splitlines()
+            f.writelines(lines_in_file)
+            os.remove(local_file_path)
 
-        return fileName
+        return new_file_path
     else:
         print("Could not determine committee.")
         return
