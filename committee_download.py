@@ -212,21 +212,21 @@ def downloadFile(nodeHREF:str):
         downloadFolder (str, optional): Defaults to
     "/home/njennings/minutes_pdfs/". The folder to which the file will be placed.  
     """
-    page = session.get(nodeHREF)
-    html = BeautifulSoup(page.content, "html.parser")
-    message_status = html.find("div", {"class": "messages status"})
-    href = message_status.find("a")["href"]
+    request = session.get(nodeHREF)
+    page_html = BeautifulSoup(request.content, "html.parser")
+    message_status_element = page_html.find("div", {"class": "messages status"})
+    file_href = message_status_element.find("a")["href"]
 
     base_html_url = credentials.getBaseURL()
 
-    if base_html_url not in href:
-        href = base_html_url + href
+    if base_html_url not in file_href:
+        file_href = base_html_url + file_href
 
-    downloadRequest = session.get(href, allow_redirects=True)
+    downloadRequest = session.get(file_href, allow_redirects=True)
 
     committee_directory = credentials.getCommitteesDirectory()
 
-    file_name = href.split("/")[-1]
+    file_name = file_href.split("/")[-1]
 
     localPath = committee_directory + file_name
 
