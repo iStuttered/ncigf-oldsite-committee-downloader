@@ -1,5 +1,6 @@
 import credentials, debugging, re, requests, time, os, shutil, urllib, textract
 from bs4 import BeautifulSoup
+from pathlib import Path
 
 session = credentials.generateSession()
 
@@ -75,11 +76,12 @@ def cleanCommitteesFolder():
     Delete everything in the downloadFolder so the script has a fresh start.
 
     """
-
     committees_directory = credentials.getCommitteesDirectory()
 
-    for file_name in os.listdir(committees_directory):
-        dir_path = os.path.join(committees_directory, file_name)
+    committee_folders = os.listdir(committees_directory)
+
+    for node_name in os.listdir(committee_folders):
+        dir_path = os.path.join(committees_directory, node_name)
         try:
             if os.path.isfile(dir_path):
                 os.unlink(dir_path)
@@ -138,7 +140,8 @@ def buildCommittees():
     committee_directory = credentials.getCommitteesDirectory()
     
     for committee_name in committee_names:
-        os.mkdir(committee_directory + "//" + committee_name)
+        committee_subfolder = Path(committee_directory + "/" + committee_name)
+        committee_subfolder.mkdir(parents=True, exist_ok="True")
 
 def determineCommittee(lines_in_file:str):
     """
