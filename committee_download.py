@@ -29,7 +29,7 @@ def getLinksFromTaxonomy(page_href:str) -> list:
 
     documents = []
 
-   base_html_url = credentials.getBaseURL()
+    base_html_url = credentials.getBaseURL()
 
     for pageIndex in range(last_page + 1):
 
