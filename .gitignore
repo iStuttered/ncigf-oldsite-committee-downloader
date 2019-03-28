@@ -4,3 +4,5 @@ credentials.py
 .vscode\*
 debugging.py
 *.pyc
+minutes_pdfs*
+

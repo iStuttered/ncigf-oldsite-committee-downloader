@@ -4,6 +4,15 @@ from pathlib import Path
 
 session = credentials.generateSession()
 
+def saveLinksFromTaxonomy(links:list):
+    
+    committee_folder = credentials.getCommitteesDirectory()
+
+    links_history_file = committee_folder + "links_history.txt"
+
+    with open(links_history_file, "w") as history_file:
+        history_file.writelines(links)
+
 def getLinksFromTaxonomy(page_href:str) -> list:
     """
     Get all the file links from every page of a paticular taxonomy URL.
@@ -49,6 +58,8 @@ def getLinksFromTaxonomy(page_href:str) -> list:
 
         documents.extend(document_links)
 
+    saveLinksFromTaxonomy(documents)
+
     return documents
 
 def getMinutes() -> list:
@@ -78,17 +89,22 @@ def cleanCommitteesFolder():
     """
     committees_directory = credentials.getCommitteesDirectory()
 
+    if not os.path.exists(committees_directory):
+        return
+
     committee_folders = os.listdir(committees_directory)
 
-    for node_name in os.listdir(committee_folders):
-        dir_path = os.path.join(committees_directory, node_name)
-        try:
-            if os.path.isfile(dir_path):
-                os.unlink(dir_path)
-            elif os.path.isdir(dir_path): 
-                shutil.rmtree(dir_path)
-        except:
-            print("Could not clean old directory.")
+    for committee_folder in committee_folders:
+        committee_path = os.path.join(committees_directory, committee_folder)
+        for node_name in os.listdir(committee_path):
+            dir_path = os.path.join(committees_directory, node_name)
+            try:
+                if os.path.isfile(dir_path):
+                    os.unlink(dir_path)
+                elif os.path.isdir(dir_path): 
+                    shutil.rmtree(dir_path)
+            except:
+                print("Could not clean old directory.")
     
 def downloadTaxonomy(taxonomyLinks:list):
     """
@@ -97,7 +113,8 @@ def downloadTaxonomy(taxonomyLinks:list):
     
     Args:
         taxonomyLinks (list): A list of node files retrieved from a taxonomy page.
-    """
+    """       
+
     files_organized = 0
     total_files = len(taxonomyLinks)
     for link in taxonomyLinks:
