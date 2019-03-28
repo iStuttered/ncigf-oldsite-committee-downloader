@@ -3,3 +3,4 @@ credentials.py
 .vscode
 .vscode\*
 debugging.py
+*.pyc
