@@ -5,5 +5,5 @@ credentials.py
 debugging.py
 *.pyc
 minutes_pdfs*
-*.txt
+links_history.txt
 
