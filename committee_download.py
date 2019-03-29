@@ -2,7 +2,14 @@ import credentials, debugging, re, requests, time, os, shutil, urllib, textract
 from bs4 import BeautifulSoup
 from pathlib import Path
 
-session = credentials.generateSession()
+def deleteHistory():
+
+    committee_folder = credentials.getCommitteesDirectory()
+
+    links_history_file = committee_folder + "../links_history.txt"
+
+    if os.path.exists(links_history_file):
+        os.unlink(links_history_file)
 
 def saveLinksFromTaxonomy(links:list):
     
@@ -16,7 +23,7 @@ def saveLinksFromTaxonomy(links:list):
 
         history_file.writelines(links)
 
-def getLinksFromHistory():
+def getLinksFromHistory() -> list:
 
     committee_folder = credentials.getCommitteesDirectory()
 
@@ -26,15 +33,14 @@ def getLinksFromHistory():
 
     with open(links_history_file, "r") as history_file:
 
-        current_link = history_file.readLine()
+        for link in history_file:
 
-        while current_link:
+            cleaned_link = link.strip()
 
-            history_links.append(current_link)
+            if len(cleaned_link) > 0:
+                history_links.append(link.strip())
 
-            current_link = history_file.readLine()
-
-        
+    return history_links
 
 def getLinksFromTaxonomy(page_href:str) -> list:
     """
@@ -48,6 +54,9 @@ def getLinksFromTaxonomy(page_href:str) -> list:
     Returns:
         list: A list of file node links.
     """
+
+    session = credentials.generateSession()
+
     page = session.get(page_href)
 
     html = BeautifulSoup(page.content, "html.parser")
@@ -121,6 +130,10 @@ def cleanCommitteesFolder():
 
         committee_folder_path = os.path.join(committees_directory, committee_folder)
 
+        if os.path.isfile(committee_folder_path):
+            os.unlink(committee_folder_path)
+            continue
+
         for committee_file_name in os.listdir(committee_folder_path):
 
             committee_file_path = os.path.join(committee_folder_path, committee_file_name)
@@ -132,7 +145,8 @@ def cleanCommitteesFolder():
                     shutil.rmtree(committee_file_path)
             except:
                 print("Could not clean old directory.")
-    
+
+
 def downloadTaxonomy(taxonomyLinks:list):
     """
     Download all of the taxonomy links in the given list as well as organize
@@ -145,6 +159,7 @@ def downloadTaxonomy(taxonomyLinks:list):
     files_organized = 0
     total_files = len(taxonomyLinks)
     for link in taxonomyLinks:
+
         organized_file = organizeFile(link)
 
         if len(organized_file) > 0:
@@ -235,9 +250,16 @@ def downloadFile(nodeHREF:str):
         downloadFolder (str, optional): Defaults to
     "/home/njennings/minutes_pdfs/". The folder to which the file will be placed.  
     """
+    print(nodeHREF)
+
+    session = credentials.generateSession()
+
     request = session.get(nodeHREF)
+
     page_html = BeautifulSoup(request.content, "html.parser")
+
     message_status_element = page_html.find("div", {"class": "messages status"})
+
     file_href = message_status_element.find("a")["href"]
 
     base_html_url = credentials.getBaseURL()
@@ -274,9 +296,7 @@ def organizeFile(file_path:str):
     
     Returns:
         str: An absolute file path
-        bool: False if no file was found
     """
-
     local_file_path = downloadFile(file_path)
     local_file_name = local_file_path.split("/")[-1]
     local_file_name_no_extension = local_file_name.split(".")[0]
@@ -330,8 +350,9 @@ if __name__ == "__main__":
 
     if userWantsToLoadLinksFromHistory():
         agendas_minutes = getLinksFromHistory()
-        downloadTaxonomy(agenda_minutes)
+        downloadTaxonomy(agendas_minutes)
     else:
+        deleteHistory()
         agendas = getAgendas()
         minutes = getMinutes()
         downloadTaxonomy(agendas)
