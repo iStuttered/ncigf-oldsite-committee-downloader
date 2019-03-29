@@ -8,10 +8,33 @@ def saveLinksFromTaxonomy(links:list):
     
     committee_folder = credentials.getCommitteesDirectory()
 
-    links_history_file = committee_folder + "links_history.txt"
+    links_history_file = committee_folder + "../links_history.txt"
 
-    with open(links_history_file, "w") as history_file:
+    with open(links_history_file, "a") as history_file:
+
+        links = ("".join([link, "\n"]) for link in links)
+
         history_file.writelines(links)
+
+def getLinksFromHistory():
+
+    committee_folder = credentials.getCommitteesDirectory()
+
+    links_history_file = committee_folder + "../links_history.txt"
+
+    history_links = []
+
+    with open(links_history_file, "r") as history_file:
+
+        current_link = history_file.readLine()
+
+        while current_link:
+
+            history_links.append(current_link)
+
+            current_link = history_file.readLine()
+
+        
 
 def getLinksFromTaxonomy(page_href:str) -> list:
     """
@@ -95,14 +118,18 @@ def cleanCommitteesFolder():
     committee_folders = os.listdir(committees_directory)
 
     for committee_folder in committee_folders:
-        committee_path = os.path.join(committees_directory, committee_folder)
-        for node_name in os.listdir(committee_path):
-            dir_path = os.path.join(committees_directory, node_name)
+
+        committee_folder_path = os.path.join(committees_directory, committee_folder)
+
+        for committee_file_name in os.listdir(committee_folder_path):
+
+            committee_file_path = os.path.join(committee_folder_path, committee_file_name)
+            
             try:
-                if os.path.isfile(dir_path):
-                    os.unlink(dir_path)
-                elif os.path.isdir(dir_path): 
-                    shutil.rmtree(dir_path)
+                if os.path.isfile(committee_file_path):
+                    os.unlink(committee_file_path)
+                elif os.path.isdir(committee_file_path): 
+                    shutil.rmtree(committee_file_path)
             except:
                 print("Could not clean old directory.")
     
@@ -284,6 +311,11 @@ def organizeFile(file_path:str):
         print("Could not determine committee.")
         return ""
 
+def userWantsToLoadLinksFromHistory() -> bool:
+    response = input("Load links from history, instead of from the internet? (Y/n)").strip().lower()
+    return response == "y" or len(response) < 1
+
+
 if __name__ == "__main__":
     """
     The main method which does the following:
@@ -295,10 +327,15 @@ if __name__ == "__main__":
     print(" - - - Start - - - ")
     cleanCommitteesFolder()
     buildCommittees()
-    agendas = getAgendas()
-    minutes = getMinutes()
-    downloadTaxonomy(agendas)
-    downloadTaxonomy(minutes)
+
+    if userWantsToLoadLinksFromHistory():
+        agendas_minutes = getLinksFromHistory()
+        downloadTaxonomy(agenda_minutes)
+    else:
+        agendas = getAgendas()
+        minutes = getMinutes()
+        downloadTaxonomy(agendas)
+        downloadTaxonomy(minutes)
     print(" - - - End - - - ")
 
 
