@@ -162,9 +162,11 @@ def downloadTaxonomy(taxonomyLinks:list):
 
         organized_file = organizeFile(link)
 
+        organized_file_name = organized_file.split("/")[-1]
+
         if len(organized_file) > 0:
             files_organized += 1
-            print(str(files_organized) + "/" + str(total_files))
+            print(str(files_organized) + "/" + str(total_files) + " " + organized_file_name)
         else:
             print("File was not organized.")
 
@@ -250,7 +252,6 @@ def downloadFile(nodeHREF:str):
         downloadFolder (str, optional): Defaults to
     "/home/njennings/minutes_pdfs/". The folder to which the file will be placed.  
     """
-    print(nodeHREF)
 
     session = credentials.generateSession()
 
@@ -267,7 +268,7 @@ def downloadFile(nodeHREF:str):
     if base_html_url not in file_href:
         file_href = base_html_url + file_href
 
-    file_request = session.get(file_href, allow_redirects=True)
+    file_request = session.get(file_href, allow_redirects=True, stream=True)
 
     committee_directory = credentials.getCommitteesDirectory()
 
@@ -280,8 +281,11 @@ def downloadFile(nodeHREF:str):
         return
 
     try:
-        open(localPath, mode="wb").write(file_request.content)
-        return localPath
+        with open(localPath, mode="wb") as local_file:
+            for file_chunk in file_request.iter_content(chunk_size=1024):
+                if file_chunk:
+                    local_file.write(file_chunk)
+            return localPath
     except OSError:
         print("Failed to download.")
         return
