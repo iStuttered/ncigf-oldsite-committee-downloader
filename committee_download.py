@@ -78,6 +78,7 @@ def getLinksFromTaxonomy(page_href:str) -> list:
         print("Parsing page " + str(pageIndex) + " out of " + str(last_page) + " " + page_href)
 
         paginated_page = session.get(page_href + "?page=" + str(pageIndex))
+
         paginated_html = BeautifulSoup(paginated_page.content, "html.parser")
 
         view_content_element = paginated_html.find("div", {"class": "view-content"})
@@ -140,8 +141,11 @@ def cleanCommitteesFolder():
             
             try:
                 if os.path.isfile(committee_file_path):
+
                     os.unlink(committee_file_path)
+
                 elif os.path.isdir(committee_file_path): 
+                    
                     shutil.rmtree(committee_file_path)
             except:
                 print("Could not clean old directory.")
