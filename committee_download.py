@@ -298,12 +298,13 @@ def organizeFile(file_path:str):
         str: An absolute file path
     """
     local_file_path = downloadFile(file_path)
-    local_file_name = local_file_path.split("/")[-1]
-    local_file_name_no_extension = local_file_name.split(".")[0]
-    committee_directory = credentials.getCommitteesDirectory()
 
     if local_file_path == None:
         return ""
+
+    local_file_name = local_file_path.split("/")[-1]
+    local_file_name_no_extension = local_file_name.split(".")[0]
+    committee_directory = credentials.getCommitteesDirectory()
 
     local_file_path_extension = local_file_name.split(".")[1]
 
