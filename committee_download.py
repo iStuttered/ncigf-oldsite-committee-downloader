@@ -2,6 +2,8 @@ import credentials, debugging, re, requests, time, os, shutil, urllib, textract
 from bs4 import BeautifulSoup
 from pathlib import Path
 
+session = credentials.generateSession()
+
 def deleteHistory():
 
     committee_folder = credentials.getCommitteesDirectory()
@@ -54,8 +56,6 @@ def getLinksFromTaxonomy(page_href:str) -> list:
     Returns:
         list: A list of file node links.
     """
-
-    session = credentials.generateSession()
 
     page = session.get(page_href)
 
@@ -256,8 +256,6 @@ def downloadFile(nodeHREF:str):
         downloadFolder (str, optional): Defaults to
     "/home/njennings/minutes_pdfs/". The folder to which the file will be placed.  
     """
-
-    session = credentials.generateSession()
 
     request = session.get(nodeHREF)
 
