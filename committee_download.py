@@ -2,8 +2,7 @@ import credentials, debugging, re, requests, time, os, shutil, urllib, textract,
 from bs4 import BeautifulSoup
 from pathlib import Path
 
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
-
+logger = debugging.generateLogger()
 session = credentials.generateSession()
 
 def deleteHistory():
@@ -314,7 +313,7 @@ def organizeFile(file_path:str):
 
     if local_file_path == None:
         logging.warning("Couldn't download file.")
-        return ""
+        return None
 
     local_file_name = local_file_path.split("/")[-1]
     local_file_name_no_extension = local_file_name.split(".")[0]
@@ -328,13 +327,13 @@ def organizeFile(file_path:str):
         local_file_path_extension = local_file_name[-1]
     else:
         logging.warning("Couldn't find file extension.")
-        return ""
+        return None
 
     invalid_extensions = ["msg", "doc"]
 
     if any(extension.lower() in local_file_path_extension for extension in invalid_extensions):
         logging.warning("Not a valid file format.")
-        return ""
+        return None
 
     processed_text = None
 
@@ -342,14 +341,14 @@ def organizeFile(file_path:str):
         processed_text = textract.process(local_file_path)
     except Exception:
         logging.warning(local_file_name + " couldn't be processed into text.")
-        return ""
+        return None
 
     lines_in_local_file = processed_text.splitlines()
 
     committee_name = determineCommittee(lines_in_local_file)
 
     if committee_name == None:
-        return ""
+        return None
 
     new_file_path = committee_directory + committee_name + local_file_name_no_extension + ".txt"
     if committee_name != None:
@@ -360,7 +359,7 @@ def organizeFile(file_path:str):
         return new_file_path
     else:
         logging.warning("Could not determine committee.")
-        return ""
+        return None
 
 def userWantsToLoadLinksFromHistory() -> bool:
     response = input("Load links from history, instead of from the internet? (Y/n)").strip().lower()

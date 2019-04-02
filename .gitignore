@@ -2,7 +2,6 @@
 credentials.py
 .vscode
 .vscode\*
-debugging.py
 *.pyc
 minutes_pdfs*
 links_history.txt
