@@ -1,4 +1,4 @@
-import requests
+import requests, os
 
 login_url = "[WEBSITE LOGIN URL]"
 base_url = "[WEBSITE BASE URL]"
