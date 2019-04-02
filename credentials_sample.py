@@ -1,4 +1,6 @@
-import requests, os
+import requests, os, urllib3
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 login_url = "[WEBSITE LOGIN URL]"
 base_url = "[WEBSITE BASE URL]"
