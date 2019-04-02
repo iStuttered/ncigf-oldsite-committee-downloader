@@ -279,7 +279,7 @@ def downloadFile(nodeHREF:str):
     try: 
         file_request = session.get(file_href, allow_redirects=True, stream=True)
     except urllib3.util.ssl_.SSLError:
-        logger.error("Something went wrong with requesting the file.")
+        logger.error("Download failed. Something went wrong with requesting the file.")
 
     committee_directory = credentials.getCommitteesDirectory()
 
@@ -288,7 +288,7 @@ def downloadFile(nodeHREF:str):
     local_path = committee_directory + file_name
 
     if "draft" in file_name.lower():
-        logger.warning("Ignoring files with 'draft' in the name.")
+        logger.warning("Download failed. Ignoring files with 'draft' in the name.")
         return None
 
     try:
@@ -300,7 +300,7 @@ def downloadFile(nodeHREF:str):
             if os.path.getsize(local_path) > 1:
                 return local_path
             else:
-                logger.warning("Downloaded file will be ignored due to its tiny size.")
+                logger.warning("Downloaded file will not be moved due to its tiny size.")
                 return None
     except OSError:
         logger.warning("Failed to move file to committee. " + local_path)
@@ -320,7 +320,6 @@ def organizeFile(file_path:str):
     local_file_path = downloadFile(file_path)
 
     if local_file_path == None:
-        logger.warning("Couldn't download " + file_path)
         return None
 
     local_file_name = local_file_path.split("/")[-1]
