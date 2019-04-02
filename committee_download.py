@@ -296,7 +296,7 @@ def downloadFile(nodeHREF:str):
                 logging.warning("Downloaded file will be ignored due to its tiny size.")
                 return
     except OSError:
-        logging.warning"Failed to download.")
+        logging.warning("Failed to download.")
         return
 
 def organizeFile(file_path:str):
