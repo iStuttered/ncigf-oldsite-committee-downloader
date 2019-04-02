@@ -168,7 +168,6 @@ def downloadTaxonomy(taxonomyLinks:list):
         organized_file = organizeFile(link)
 
         if organized_file == None:
-            logger.warning("File " + link + " could not be downloaded.")
             continue
 
         organized_file_name = organized_file.split("/")[-1]
@@ -286,25 +285,25 @@ def downloadFile(nodeHREF:str):
 
     file_name = file_href.split("/")[-1]
 
-    localPath = committee_directory + file_name
+    local_path = committee_directory + file_name
 
     if "draft" in file_name.lower():
         logger.warning("Ignoring files with 'draft' in the name.")
         return None
 
     try:
-        with open(localPath, mode="wb") as local_file:
+        with open(local_path, mode="wb") as local_file:
             for file_chunk in file_request.iter_content(chunk_size=1024):
                 if file_chunk:
                     local_file.write(file_chunk)
 
-            if os.path.getsize(localPath) > 1:
-                return localPath
+            if os.path.getsize(local_path) > 1:
+                return local_path
             else:
                 logger.warning("Downloaded file will be ignored due to its tiny size.")
                 return None
     except OSError:
-        logger.warning("Failed to download.")
+        logger.warning("Failed to move file to committee. " + local_path)
         return None
 
 def organizeFile(file_path:str):
@@ -321,7 +320,7 @@ def organizeFile(file_path:str):
     local_file_path = downloadFile(file_path)
 
     if local_file_path == None:
-        logger.warning("Couldn't download file.")
+        logger.warning("Couldn't download " + file_path)
         return None
 
     local_file_name = local_file_path.split("/")[-1]
