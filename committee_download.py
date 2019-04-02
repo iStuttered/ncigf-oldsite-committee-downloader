@@ -287,7 +287,11 @@ def downloadFile(nodeHREF:str):
             for file_chunk in file_request.iter_content(chunk_size=1024):
                 if file_chunk:
                     local_file.write(file_chunk)
-            return localPath
+
+            if os.path.getsize(localPath) > 1:
+                return localPath
+            else:
+                return ""
     except OSError:
         print("Failed to download.")
         return
@@ -312,7 +316,14 @@ def organizeFile(file_path:str):
     local_file_name_no_extension = local_file_name.split(".")[0]
     committee_directory = credentials.getCommitteesDirectory()
 
-    local_file_path_extension = local_file_name.split(".")[1]
+    local_file_pieces = local_file_name.split(".")
+
+    local_file_path_extension = None
+    
+    if len(local_file_pieces) > 1: 
+        local_file_path_extension = local_file_name[-1]
+    else:
+        return ""
 
     invalid_extensions = ["msg", "doc"]
 
@@ -320,7 +331,15 @@ def organizeFile(file_path:str):
         print("Not a valid file format.")
         return ""
 
-    lines_in_local_file = textract.process(local_file_path).splitlines()
+    processed_text = None
+
+    try:
+        processed_text = textract.process(local_file_path)
+    except Exception:
+        print(local_file_name + " couldn't be processed into text.")
+        return ""
+
+    lines_in_local_file = processed_text.splitlines()
 
     committee_name = determineCommittee(lines_in_local_file)
 
