@@ -1,6 +1,8 @@
-import credentials, debugging, re, requests, time, os, shutil, urllib, textract
+import credentials, debugging, re, requests, time, os, shutil, urllib, textract, logging, sys
 from bs4 import BeautifulSoup
 from pathlib import Path
+
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 session = credentials.generateSession()
 
@@ -75,7 +77,7 @@ def getLinksFromTaxonomy(page_href:str) -> list:
 
     for pageIndex in range(last_page + 1):
 
-        print("Parsing page " + str(pageIndex) + " out of " + str(last_page) + " " + page_href)
+        logging.info("Parsing page " + str(pageIndex) + " out of " + str(last_page) + " " + page_href)
 
         paginated_page = session.get(page_href + "?page=" + str(pageIndex))
 
@@ -148,7 +150,7 @@ def cleanCommitteesFolder():
                     
                     shutil.rmtree(committee_file_path)
             except:
-                print("Could not clean old directory.")
+                logging.error("Could not clean old directory.")
 
 
 def downloadTaxonomy(taxonomyLinks:list):
@@ -170,9 +172,9 @@ def downloadTaxonomy(taxonomyLinks:list):
 
         if len(organized_file) > 0:
             files_organized += 1
-            print(str(files_organized) + "/" + str(total_files) + " " + organized_file_name)
+            logging.info(str(files_organized) + "/" + str(total_files) + " " + organized_file_name)
         else:
-            print("File was not organized.")
+            logging.warning("File was not organized.")
 
 def buildCommittees():
     """
@@ -279,7 +281,7 @@ def downloadFile(nodeHREF:str):
     localPath = committee_directory + file_name
 
     if "draft" in file_name.lower():
-        print("Ignore drafts.")
+        logging.warning("Ignoring files with 'draft' in the name.")
         return
 
     try:
@@ -291,9 +293,10 @@ def downloadFile(nodeHREF:str):
             if os.path.getsize(localPath) > 1:
                 return localPath
             else:
-                return ""
+                logging.warning("Downloaded file will be ignored due to its tiny size.")
+                return
     except OSError:
-        print("Failed to download.")
+        logging.warning"Failed to download.")
         return
 
 def organizeFile(file_path:str):
@@ -310,6 +313,7 @@ def organizeFile(file_path:str):
     local_file_path = downloadFile(file_path)
 
     if local_file_path == None:
+        logging.warning("Couldn't download file.")
         return ""
 
     local_file_name = local_file_path.split("/")[-1]
@@ -323,12 +327,13 @@ def organizeFile(file_path:str):
     if len(local_file_pieces) > 1: 
         local_file_path_extension = local_file_name[-1]
     else:
+        logging.warning("Couldn't find file extension.")
         return ""
 
     invalid_extensions = ["msg", "doc"]
 
     if any(extension.lower() in local_file_path_extension for extension in invalid_extensions):
-        print("Not a valid file format.")
+        logging.warning("Not a valid file format.")
         return ""
 
     processed_text = None
@@ -336,7 +341,7 @@ def organizeFile(file_path:str):
     try:
         processed_text = textract.process(local_file_path)
     except Exception:
-        print(local_file_name + " couldn't be processed into text.")
+        logging.warning(local_file_name + " couldn't be processed into text.")
         return ""
 
     lines_in_local_file = processed_text.splitlines()
@@ -354,7 +359,7 @@ def organizeFile(file_path:str):
 
         return new_file_path
     else:
-        print("Could not determine committee.")
+        logging.warning("Could not determine committee.")
         return ""
 
 def userWantsToLoadLinksFromHistory() -> bool:
@@ -370,7 +375,7 @@ if __name__ == "__main__":
     3. Get a list of links of all the agendas and minutes
     4. Download those links and organize them into committees
     """
-    print(" - - - Start - - - ")
+    logging.info(" - - - Start - - - ")
     cleanCommitteesFolder()
     buildCommittees()
 
@@ -383,14 +388,5 @@ if __name__ == "__main__":
         minutes = getMinutes()
         downloadTaxonomy(agendas)
         downloadTaxonomy(minutes)
-    print(" - - - End - - - ")
+    logging.info(" - - - End - - - ")
 
-
-
-
-
-        
-
-
-
-    
