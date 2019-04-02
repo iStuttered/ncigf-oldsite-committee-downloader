@@ -1,4 +1,4 @@
-import credentials, debugging, re, requests, time, os, shutil, urllib, textract
+import credentials, debugging, re, requests, time, os, shutil, urllib3, textract
 from bs4 import BeautifulSoup
 from pathlib import Path
 
@@ -124,7 +124,7 @@ def cleanCommitteesFolder():
     committees_directory = credentials.getCommitteesDirectory()
 
     if not os.path.exists(committees_directory):
-        return
+        return None
 
     committee_folders = os.listdir(committees_directory)
 
@@ -166,6 +166,10 @@ def downloadTaxonomy(taxonomyLinks:list):
     for link in taxonomyLinks:
 
         organized_file = organizeFile(link)
+
+        if organized_file == None:
+            logger.warning("File " + link + " could not be downloaded.")
+            continue
 
         organized_file_name = organized_file.split("/")[-1]
 
@@ -262,7 +266,9 @@ def downloadFile(nodeHREF:str):
 
     page_html = BeautifulSoup(request.content, "html.parser")
 
-    message_status_element = page_html.find("div", {"class": "messages status"})
+    tabs_wrapper = page_html.find("div", {"id": "squeeze"})
+
+    message_status_element = tabs_wrapper.find("div", {"class": "messages status"})
 
     file_href = message_status_element.find("a")["href"]
 
@@ -271,7 +277,10 @@ def downloadFile(nodeHREF:str):
     if base_html_url not in file_href:
         file_href = base_html_url + file_href
 
-    file_request = session.get(file_href, allow_redirects=True, stream=True)
+    try: 
+        file_request = session.get(file_href, allow_redirects=True, stream=True)
+    except urllib3.util.ssl_.SSLError:
+        logger.error("Something went wrong with requesting the file.")
 
     committee_directory = credentials.getCommitteesDirectory()
 
@@ -281,7 +290,7 @@ def downloadFile(nodeHREF:str):
 
     if "draft" in file_name.lower():
         logger.warning("Ignoring files with 'draft' in the name.")
-        return
+        return None
 
     try:
         with open(localPath, mode="wb") as local_file:
@@ -293,10 +302,10 @@ def downloadFile(nodeHREF:str):
                 return localPath
             else:
                 logger.warning("Downloaded file will be ignored due to its tiny size.")
-                return
+                return None
     except OSError:
         logger.warning("Failed to download.")
-        return
+        return None
 
 def organizeFile(file_path:str):
     """
@@ -348,18 +357,16 @@ def organizeFile(file_path:str):
     committee_name = determineCommittee(lines_in_local_file)
 
     if committee_name == None:
+        logger.warning("Could not determine committee.")
         return None
-
-    new_file_path = committee_directory + committee_name + local_file_name_no_extension + ".txt"
-    if committee_name != None:
+    else:
+        new_file_path = committee_directory + committee_name + local_file_name_no_extension + ".txt"
+        
         with open(new_file_path, "wb") as new_file:
             new_file.writelines(lines_in_local_file)
             os.remove(local_file_path)
 
         return new_file_path
-    else:
-        logger.warning("Could not determine committee.")
-        return None
 
 def userWantsToLoadLinksFromHistory() -> bool:
     response = input("Load links from history, instead of from the internet? (Y/n)").strip().lower()
