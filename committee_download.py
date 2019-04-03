@@ -353,12 +353,14 @@ def organizeFile(file_path:str):
     local_file_name_extension = None
     
     if len(local_file_pieces) > 1: 
-        local_file_name_extension = local_file_name[-1]
+        local_file_name_extension = local_file_pieces[-1]
     else:
         logger.warning(local_file_name + " Couldn't find file extension.")
         return None
 
     invalid_extensions = ["msg", "doc"]
+
+    print(local_file_name_extension)
 
     if any(extension.lower() in local_file_name_extension for extension in invalid_extensions):
         logger.warning(local_file_name + " [" + local_file_name_extension + "] Not a valid file format.")
