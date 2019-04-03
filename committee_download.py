@@ -360,8 +360,6 @@ def organizeFile(file_path:str):
 
     invalid_extensions = ["msg", "doc"]
 
-    print(local_file_name_extension)
-
     if any(extension.lower() in local_file_name_extension for extension in invalid_extensions):
         logger.warning(local_file_name + " [" + local_file_name_extension + "] Not a valid file format.")
         return None
