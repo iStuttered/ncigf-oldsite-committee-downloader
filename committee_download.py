@@ -6,6 +6,10 @@ logger = debugging.generateLogger()
 session = credentials.generateSession()
 
 def deleteHistory():
+    """
+    Delete the links_history archive file.
+    
+    """
 
     committee_folder = credentials.getCommitteesDirectory()
 
@@ -15,7 +19,17 @@ def deleteHistory():
         os.unlink(links_history_file)
 
 def saveLinksFromTaxonomy(links:list):
+    """
+    Save links retrieved from getLinksFromTaxonomy into a links_history file.
     
+    Parameters
+    ----------
+    links : list
+        A list of node links.
+    
+    """
+
+
     committee_folder = credentials.getCommitteesDirectory()
 
     links_history_file = committee_folder + "../links_history.txt"
@@ -27,6 +41,14 @@ def saveLinksFromTaxonomy(links:list):
         history_file.writelines(links)
 
 def getLinksFromHistory() -> list:
+    """
+    Get file links from links_history file.
+    
+    Returns
+    -------
+    list
+        A list of links.
+    """
 
     committee_folder = credentials.getCommitteesDirectory()
 
