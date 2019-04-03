@@ -106,13 +106,30 @@ def getLinksFromTaxonomy(page_href:str) -> list:
 
         view_content_element = paginated_html.find("div", {"class": "view-content"})
 
-        document_links = view_content_element.find_all("a")
+        node_links = view_content_element.find_all("a")
 
-        document_links = [
-            ''.join( [base_html_url, element["href"]] ) for element in document_links
+        node_links = [
+            ''.join( [base_html_url, element["href"]] ) for element in node_links
         ]
 
-        documents.extend(document_links)
+        for node_link in node_links:
+
+            file_request = session.get(node_link)
+
+            page_html = BeautifulSoup(file_request.content, "html.parser")
+
+            tabs_wrapper = page_html.find("div", {"id": "squeeze"})
+
+            message_status_element = tabs_wrapper.find("div", {"class": "messages status"})
+
+            file_href = message_status_element.find("a")["href"]
+
+            base_html_url = credentials.getBaseURL()
+
+            if base_html_url not in file_href:
+                file_href = base_html_url + file_href
+
+            documents.append(file_href)
 
     saveLinksFromTaxonomy(documents)
 
@@ -272,7 +289,7 @@ def determineCommittee(lines_in_file:str):
     
     return None
 
-def downloadFile(nodeHREF:str):
+def downloadFile(file_href:str):
     """
     Given a node link, download the actual file that belongs to the link and
     place it in the downloadFolder.
@@ -282,21 +299,6 @@ def downloadFile(nodeHREF:str):
         downloadFolder (str, optional): Defaults to
     "/home/njennings/minutes_pdfs/". The folder to which the file will be placed.  
     """
-
-    request = session.get(nodeHREF)
-
-    page_html = BeautifulSoup(request.content, "html.parser")
-
-    tabs_wrapper = page_html.find("div", {"id": "squeeze"})
-
-    message_status_element = tabs_wrapper.find("div", {"class": "messages status"})
-
-    file_href = message_status_element.find("a")["href"]
-
-    base_html_url = credentials.getBaseURL()
-
-    if base_html_url not in file_href:
-        file_href = base_html_url + file_href
 
     try: 
         file_request = session.get(file_href, allow_redirects=True, stream=True)
