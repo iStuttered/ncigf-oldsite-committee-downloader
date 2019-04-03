@@ -124,8 +124,6 @@ def getLinksFromTaxonomy(page_href:str) -> list:
 
             file_href = message_status_element.find("a")["href"]
 
-            base_html_url = credentials.getBaseURL()
-
             if base_html_url not in file_href:
                 file_href = base_html_url + file_href
 
