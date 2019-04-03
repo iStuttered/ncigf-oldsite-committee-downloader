@@ -25,7 +25,7 @@ def saveLinksFromTaxonomy(links:list):
     Parameters
     ----------
     links : list
-        A list of node links.
+        A list of links.
     
     """
 
@@ -77,7 +77,7 @@ def getLinksFromTaxonomy(page_href:str) -> list:
         href (str): A link to a taxonomy page.
     
     Returns:
-        list: A list of file node links.
+        list: A list of file links.
     """
 
     page = session.get(page_href)
