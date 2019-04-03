@@ -383,7 +383,7 @@ def organizeFile(file_path:str):
         new_file_path = committee_directory + committee_name + local_file_name_no_extension + ".txt"
         
         with open(new_file_path, "wb") as new_file:
-            new_file.writelines(lines_in_local_file)
+            new_file.write(processed_text)
             os.remove(local_file_path)
 
         return new_file_path
