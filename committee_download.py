@@ -350,18 +350,18 @@ def organizeFile(file_path:str):
 
     local_file_pieces = local_file_name.split(".")
 
-    local_file_path_extension = None
+    local_file_name_extension = None
     
     if len(local_file_pieces) > 1: 
-        local_file_path_extension = local_file_name[-1]
+        local_file_name_extension = local_file_name[-1]
     else:
-        logger.warning("Couldn't find file extension.")
+        logger.warning(local_file_name + " Couldn't find file extension.")
         return None
 
     invalid_extensions = ["msg", "doc"]
 
-    if any(extension.lower() in local_file_path_extension for extension in invalid_extensions):
-        logger.warning("Not a valid file format.")
+    if any(extension.lower() in local_file_name_extension for extension in invalid_extensions):
+        logger.warning(local_file_name + " [" + local_file_name_extension + "] Not a valid file format.")
         return None
 
     processed_text = None
@@ -377,7 +377,7 @@ def organizeFile(file_path:str):
     committee_name = determineCommittee(lines_in_local_file)
 
     if committee_name == None:
-        logger.warning("Could not determine committee.")
+        logger.warning(local_file_name + " Could not determine committee.")
         return None
     else:
         new_file_path = committee_directory + committee_name + local_file_name_no_extension + ".txt"
