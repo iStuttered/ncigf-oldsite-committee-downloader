@@ -384,7 +384,6 @@ def organizeFile(file_path:str):
         
         with open(new_file_path, "wb") as new_file:
             new_file.write(processed_text)
-            os.remove(local_file_path)
 
         return new_file_path
 
