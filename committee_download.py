@@ -380,12 +380,14 @@ def organizeFile(file_path:str):
         logger.warning(local_file_name + " Could not determine committee")
         return None
     else:
-        new_file_path = committee_directory + committee_name + local_file_name_no_extension + ".txt"
-        
-        with open(new_file_path, "wb") as new_file:
-            new_file.write(processed_text)
+        new_file_path_txt = committee_directory + committee_name + local_file_name_no_extension + ".txt"
+        new_file_path_pdf = committee_directory + committee_name + local_file_name_no_extension + ".pdf"
 
-        return new_file_path
+        with open(new_file_path_txt, "wb") as new_file:
+            new_file.write(processed_text)
+            os.rename(local_file_path, new_file_path_pdf)
+
+        return new_file_path_txt
 
 def userWantsToLoadLinksFromHistory() -> bool:
     response = input("Load links from history, instead of from the internet? (Y/n)").strip().lower()
