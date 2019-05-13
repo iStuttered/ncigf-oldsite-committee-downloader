@@ -153,6 +153,10 @@ def getAgendas() -> list:
     agendas = "https://member.ncigf.org/taxonomy/term/332"
     return getLinksFromTaxonomy(agendas)
 
+def getBoardMinutes() -> list:
+    board_minutes = "https://member.ncigf.org/board_members/board_minutes"
+    return getLinksFromTaxonomy(board_minutes)
+
 def cleanCommitteesFolder():
     """
     Delete everything in the downloadFolder so the script has a fresh start.
@@ -413,7 +417,9 @@ if __name__ == "__main__":
         deleteHistory()
         agendas = getAgendas()
         minutes = getMinutes()
+        board_minutes = getBoardMinutes()
         downloadTaxonomy(agendas)
         downloadTaxonomy(minutes)
+        downloadTaxonomy(board_minutes)
     logger.info(" - - - End - - - ")
 
