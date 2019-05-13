@@ -244,7 +244,8 @@ def buildCommittees():
         "Operations Committee",
         "Public Policy Committee",
         "Site Selection Committee",
-        "Special Funding Committee"
+        "Special Funding Committee",
+        "NCIGF Board"
     ]
 
     committee_directory = credentials.getCommitteesDirectory()
@@ -378,7 +379,16 @@ def organizeFile(file_path:str):
 
     lines_in_local_file = processed_text.splitlines()
 
-    committee_name = determineCommittee(lines_in_local_file)
+    if "aic" in local_file_name.lower():
+        committee_name = "Accounting Issues Committee/"
+    elif "bod" in local_file_name.lower() or "directors" in local_file_name.lower():
+        committee_name = "NCIGF Board/"
+    elif "mac" in local_file_name.lower():
+        committee_name = "Member Committee Advisory Committee/"
+    elif "communication" in local_file_name.lower():
+        committee_name =  "Communications Committee/"
+    else:
+        committee_name = determineCommittee(lines_in_local_file)
 
     if committee_name == None:
         logger.warning(local_file_name + " Could not determine committee")
