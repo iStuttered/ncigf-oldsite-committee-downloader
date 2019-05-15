@@ -265,7 +265,7 @@ def determineCommittee(lines_in_file:str):
     committees = [
         "Accounting Issues Committee",
         "Best Practices Committee",
-        "Audit Committee",
+        "Board Audit Committee",
         "Corporate Governance",
         "Finance Committee",
         "Bylaws Committee",
@@ -274,7 +274,7 @@ def determineCommittee(lines_in_file:str):
         "Core Services Committee",
         "Education Committee",
         "Information Systems Committee",
-        "IT Advisory",
+        "IT Advisory & Governance",
         "Legal Committee",
         "Member Committee Advisory Committee",
         "NCIGF Services Committee",
