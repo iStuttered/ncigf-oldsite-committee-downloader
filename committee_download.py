@@ -225,27 +225,27 @@ def buildCommittees():
     committee_directory defined in the credentials file.
     """
     committee_names = [
-        "Accounting Issues Committee",
+        "Accounting Issues Committee",#
         "Best Practices Committee",
-        "Audit Committee",
-        "Corporate Governance",
+        "Audit Committee",#
+        "Corporate Governance",#
         "Finance Committee",
-        "Bylaws Committee",
-        "Communications Committee",
-        "Coordinating Committee Chairs Committee",
+        "Bylaws Committee",#
+        "Communications Committee",#
+        "Coordinating Committee Chairs Committee",#
         "Core Services Committee",
-        "Education Committee",
-        "Information Systems Committee",
-        "IT Advisory and Governance",
-        "Legal Committee",
-        "Member Committee Advisory Committee",
-        "NCIGF Services Committee",
+        "Education Committee",#
+        "Information Systems Committee",#
+        "IT Advisory and Governance",#
+        "Legal Committee",#
+        "Member Committee Advisory Committee",#
+        "NCIGF Services Committee",#
         "Nominating Committee",
-        "Operations Committee",
-        "Public Policy Committee",
-        "Site Selection Committee",
-        "Special Funding Committee",
-        "NCIGF Board"
+        "Operations Committee",#
+        "Public Policy Committee",#
+        "Site Selection Committee",#
+        "Special Funding Committee",#
+        "NCIGF Board"#
     ]
 
     committee_directory = credentials.getCommitteesDirectory()
